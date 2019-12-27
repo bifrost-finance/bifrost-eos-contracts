@@ -25,4 +25,4 @@ namespace bifrost {
       }.send();
    }
 
-} /// namespace eosio
+} /// namespace bifrost
