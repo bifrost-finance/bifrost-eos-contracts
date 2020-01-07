@@ -6,7 +6,7 @@ namespace bifrost {
    bridge::bridge(name s, name code, datastream<const char *> ds) :
            contract(s, code, ds),
            _global_state(get_self(), get_self().value) {
-      _gstate = _global_state.exists() ? _global_state.get() : global_state{};
+      _gstate = _global_state.exists() ? _global_state.get() : globalstate{};
    }
 
    bridge::~bridge() {
@@ -31,7 +31,7 @@ namespace bifrost {
 
       // record to database
       deposits deposit_table(get_self(), from.value);
-      deposit_table.emplace(from, [&](auto &dt) {
+      deposit_table.emplace(get_self(), [&](auto &dt) {
          dt.id = ++_gstate.deposit_id;
          dt.contract = eosio_token_account;
          dt.from = from;

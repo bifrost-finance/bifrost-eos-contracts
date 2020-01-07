@@ -50,11 +50,13 @@ namespace bifrost {
       static constexpr eosio::name eosio_token_account{"eosio.token"_n};
       static constexpr eosio::name transfer_action{"transfer"_n};
 
-      struct [[eosio::table]] global_state {
-         global_state() {}
+      struct [[eosio::table]] globalstate {
+         globalstate() {}
 
          uint64_t deposit_id = 1;
          bool active = true;
+
+         EOSLIB_SERIALIZE( globalstate, (deposit_id)(active) )
       };
 
       struct [[eosio::table]] deposit {
@@ -65,11 +67,13 @@ namespace bifrost {
          string memo;
          uint8_t status;
 
+         EOSLIB_SERIALIZE( deposit, (id)(contract)(from)(quantity)(memo)(status) )
+
          uint64_t primary_key() const { return id; }
       };
 
-      eosio::singleton<"globals"_n, global_state> _global_state;
-      global_state _gstate;
+      eosio::singleton<"globalstate"_n, globalstate> _global_state;
+      globalstate _gstate;
 
       typedef eosio::multi_index<"deposits"_n, deposit> deposits;
    };
