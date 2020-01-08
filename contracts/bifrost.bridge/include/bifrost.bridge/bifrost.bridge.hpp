@@ -47,7 +47,7 @@ namespace bifrost {
 
    private:
       static constexpr eosio::name active_permission{"active"_n};
-      static constexpr eosio::name eosio_token_account{"eosio.token"_n};
+      static constexpr eosio::name eosio_token_contract{"eosio.token"_n};
       static constexpr eosio::name transfer_action{"transfer"_n};
 
       struct [[eosio::table]] globalstate {

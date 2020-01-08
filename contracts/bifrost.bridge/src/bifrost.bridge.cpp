@@ -33,7 +33,7 @@ namespace bifrost {
       deposits deposit_table(get_self(), from.value);
       deposit_table.emplace(get_self(), [&](auto &dt) {
          dt.id = ++_gstate.deposit_id;
-         dt.contract = eosio_token_account;
+         dt.contract = eosio_token_contract;
          dt.from = from;
          dt.quantity = quantity;
          dt.memo = memo;
