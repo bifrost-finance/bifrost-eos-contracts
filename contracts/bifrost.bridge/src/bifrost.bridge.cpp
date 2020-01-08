@@ -125,4 +125,41 @@ namespace bifrost {
       _gstate.active = false;
    }
 
+   void bridge::regtoken(const name      &token_contract,
+                         const symbol    &token_symbol,
+                         const asset     &max_accept,
+                         const asset     &min_once_transfer,
+                         const asset     &max_once_transfer,
+                         const asset     &max_daily_transfer,
+                         bool            active) {
+      require_auth(get_self());
+
+      check(is_account(token_contract), "token_contract account does not exist");
+      check(token_symbol.is_valid(), "token_symbol invalid");
+      check(max_accept.is_valid(), "invalid max_accept");
+      check(max_accept.amount > 0, "max_accept must be positive");
+      check(max_accept.symbol == token_symbol &&
+            min_once_transfer.symbol == token_symbol &&
+            max_once_transfer.symbol == token_symbol &&
+            max_daily_transfer.symbol == token_symbol &&
+            min_once_transfer.amount > 0 &&
+            max_once_transfer.amount > min_once_transfer.amount &&
+            max_daily_transfer.amount > max_once_transfer.amount, "invalid asset");
+
+      tokens _tokens(get_self(), token_contract.value);
+      auto existing = _tokens.find(token_contract.value);
+      check(existing == _tokens.end(), "token contract already exist");
+      _tokens.emplace(get_self(), [&](auto &r) {
+         r.token_contract = token_contract;
+         r.accept = asset{0, token_symbol};
+         r.max_accept = max_accept;
+         r.min_once_transfer = min_once_transfer;
+         r.max_once_transfer = max_once_transfer;
+         r.max_daily_transfer = max_daily_transfer;
+         r.total_transfer = asset{0, max_accept.symbol};
+         r.total_transfer_times = 0;
+         r.active = active;
+      });
+   }
+
 } /// namespace bifrost

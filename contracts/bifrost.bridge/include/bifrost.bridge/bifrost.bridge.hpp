@@ -43,6 +43,15 @@ namespace bifrost {
       [[eosio::action]]
       void deactivate();
 
+      [[eosio::action]]
+      void regtoken(const name      &token_contract,
+                    const symbol    &token_symbol,
+                    const asset     &max_accept,
+                    const asset     &min_once_transfer,
+                    const asset     &max_once_transfer,
+                    const asset     &max_daily_transfer,
+                    bool            active);
+
       using withdraw_action = eosio::action_wrapper<"withdraw"_n, &bridge::withdraw>;
 
    private:
@@ -61,11 +70,11 @@ namespace bifrost {
 
       struct [[eosio::table]] deposit {
          uint64_t id;
-         name contract;
-         name from;
-         asset quantity;
-         string memo;
-         uint8_t status;
+         name     contract;
+         name     from;
+         asset    quantity;
+         string   memo;
+         uint8_t  status;
 
          EOSLIB_SERIALIZE( deposit, (id)(contract)(from)(quantity)(memo)(status) )
 
