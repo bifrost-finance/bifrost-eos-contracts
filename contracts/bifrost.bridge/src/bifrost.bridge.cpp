@@ -24,6 +24,12 @@ namespace bifrost {
       // check contract active
       check(_gstate.active, "contract not active");
 
+      // check token active
+      tokens _tokens(get_self(), eosio_token_contract.value);
+      auto idx = _tokens.get_index<"tokensym"_n>();
+      auto token = idx.get(quantity.symbol.code().raw(),"token with symbol does not support" );
+      check(token.active, "token not active");
+
       // parse and check memo
       memo_info_type memo_info = get_memo_info(memo);
 //      check(""_n == memo_info.receiver, "receiver: invalid bifrost address format");
