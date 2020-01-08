@@ -134,9 +134,9 @@ namespace bifrost {
    void bridge::regtoken(const name      &token_contract,
                          const symbol    &token_symbol,
                          const asset     &max_accept,
-                         const asset     &min_once_transfer,
-                         const asset     &max_once_transfer,
-                         const asset     &max_daily_transfer,
+                         const asset     &deposit_min_once,
+                         const asset     &deposit_max_once,
+                         const asset     &deposit_max_daily,
                          bool            active) {
       require_auth(get_self());
 
@@ -145,12 +145,12 @@ namespace bifrost {
       check(max_accept.is_valid(), "invalid max_accept");
       check(max_accept.amount > 0, "max_accept must be positive");
       check(max_accept.symbol == token_symbol &&
-            min_once_transfer.symbol == token_symbol &&
-            max_once_transfer.symbol == token_symbol &&
-            max_daily_transfer.symbol == token_symbol &&
-            min_once_transfer.amount > 0 &&
-            max_once_transfer.amount > min_once_transfer.amount &&
-            max_daily_transfer.amount > max_once_transfer.amount, "invalid asset");
+            deposit_min_once.symbol == token_symbol &&
+            deposit_max_once.symbol == token_symbol &&
+            deposit_max_daily.symbol == token_symbol &&
+            deposit_min_once.amount > 0 &&
+            deposit_max_once.amount > deposit_min_once.amount &&
+            deposit_max_daily.amount > deposit_max_once.amount, "invalid asset");
 
       tokens _tokens(get_self(), token_contract.value);
       auto existing = _tokens.find(token_contract.value);
@@ -159,11 +159,13 @@ namespace bifrost {
          r.token_contract = token_contract;
          r.accept = asset{0, token_symbol};
          r.max_accept = max_accept;
-         r.min_once_transfer = min_once_transfer;
-         r.max_once_transfer = max_once_transfer;
-         r.max_daily_transfer = max_daily_transfer;
-         r.total_transfer = asset{0, max_accept.symbol};
-         r.total_transfer_times = 0;
+         r.deposit_min_once = deposit_min_once;
+         r.deposit_max_once = deposit_max_once;
+         r.deposit_max_daily = deposit_max_daily;
+         r.deposit_total = asset{0, token_symbol};
+         r.deposit_total_times = 0;
+         r.withdraw_total = asset{0, token_symbol};
+         r.withdraw_total_times = 0;
          r.active = active;
       });
    }

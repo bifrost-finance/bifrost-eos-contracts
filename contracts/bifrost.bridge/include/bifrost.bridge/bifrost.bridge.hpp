@@ -47,9 +47,9 @@ namespace bifrost {
       void regtoken(const name      &token_contract,
                     const symbol    &token_symbol,
                     const asset     &max_accept,
-                    const asset     &min_once_transfer,
-                    const asset     &max_once_transfer,
-                    const asset     &max_daily_transfer,
+                    const asset     &deposit_min_once,
+                    const asset     &deposit_max_once,
+                    const asset     &deposit_max_daily,
                     bool            active);
 
       using withdraw_action = eosio::action_wrapper<"withdraw"_n, &bridge::withdraw>;
@@ -86,11 +86,13 @@ namespace bifrost {
          symbol      token_symbol;
          asset       accept;
          asset       max_accept;
-         asset       min_once_transfer;
-         asset       max_once_transfer;
-         asset       max_daily_transfer;
-         asset       total_transfer;
-         uint64_t    total_transfer_times;
+         asset       deposit_min_once;
+         asset       deposit_max_once;
+         asset       deposit_max_daily;
+         asset       deposit_total;
+         uint64_t    deposit_total_times;
+         asset       withdraw_total;
+         uint64_t    withdraw_total_times;
          bool        active;
 
          uint64_t  primary_key()const { return token_contract.value; }
