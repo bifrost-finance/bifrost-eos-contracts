@@ -116,9 +116,6 @@ namespace bifrost {
                          const string &memo) {
       require_auth(get_self());
 
-      // check active
-      check(_gstate.active, "contract not active");
-
       auto sym = quantity.symbol;
       check(sym.is_valid(), "invalid symbol name");
       check(memo.size() <= 256, "memo has more than 256 bytes");
