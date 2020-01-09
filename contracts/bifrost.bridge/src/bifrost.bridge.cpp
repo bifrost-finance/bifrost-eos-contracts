@@ -140,13 +140,13 @@ namespace bifrost {
       });
    }
 
-   void bridge::activate() {
+   void bridge::active() {
       require_auth(get_self());
 
       _gstate.active = true;
    }
 
-   void bridge::deactivate() {
+   void bridge::deactive() {
       require_auth(get_self());
 
       _gstate.active = false;
@@ -188,6 +188,45 @@ namespace bifrost {
          r.withdraw_total = asset{0, token_symbol};
          r.withdraw_total_times = 0;
          r.active = active;
+      });
+   }
+
+   void bridge::activetk(const name &token_contract, const symbol &token_symbol) {
+      require_auth(get_self());
+
+      tokens _tokens(get_self(), eosio_token_contract.value);
+      auto idx = _tokens.get_index<"tokensym"_n>();
+      auto token = idx.get(token_symbol.code().raw(),"token with symbol does not support" );
+      _tokens.modify(token, same_payer, [&](auto &t) {
+         t.active = true;
+      });
+   }
+
+   void bridge::deactivetk(const name &token_contract, const symbol &token_symbol) {
+      require_auth(get_self());
+
+      tokens _tokens(get_self(), eosio_token_contract.value);
+      auto idx = _tokens.get_index<"tokensym"_n>();
+      auto token = idx.get(token_symbol.code().raw(),"token with symbol does not support" );
+      _tokens.modify(token, same_payer, [&](auto &t) {
+         t.active = false;
+      });
+   }
+
+   void bridge::setdeposittk(const name      &token_contract,
+                             const symbol    &token_symbol,
+                             const asset     &deposit_min_once,
+                             const asset     &deposit_max_once,
+                             const asset     &deposit_max_daily) {
+      require_auth(get_self());
+
+      tokens _tokens(get_self(), eosio_token_contract.value);
+      auto idx = _tokens.get_index<"tokensym"_n>();
+      auto token = idx.get(token_symbol.code().raw(),"token with symbol does not support" );
+      _tokens.modify(token, same_payer, [&](auto &t) {
+         t.deposit_min_once = deposit_min_once;
+         t.deposit_max_once = deposit_max_once;
+         t.deposit_max_daily = deposit_max_daily;
       });
    }
 

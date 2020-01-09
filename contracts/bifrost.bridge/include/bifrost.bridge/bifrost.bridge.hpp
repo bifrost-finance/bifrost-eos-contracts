@@ -38,10 +38,10 @@ namespace bifrost {
                     const string &memo);
 
       [[eosio::action]]
-      void activate();
+      void active();
 
       [[eosio::action]]
-      void deactivate();
+      void deactive();
 
       [[eosio::action]]
       void regtoken(const name      &token_contract,
@@ -51,6 +51,19 @@ namespace bifrost {
                     const asset     &deposit_max_once,
                     const asset     &deposit_max_daily,
                     bool            active);
+
+      [[eosio::action]]
+      void activetk(const name &token_contract, const symbol &token_symbol);
+
+      [[eosio::action]]
+      void deactivetk(const name &token_contract, const symbol &token_symbol);
+
+      [[eosio::action]]
+      void setdeposittk(const name      &token_contract,
+                        const symbol    &token_symbol,
+                        const asset     &deposit_min_once,
+                        const asset     &deposit_max_once,
+                        const asset     &deposit_max_daily);
 
       using withdraw_action = eosio::action_wrapper<"withdraw"_n, &bridge::withdraw>;
 
