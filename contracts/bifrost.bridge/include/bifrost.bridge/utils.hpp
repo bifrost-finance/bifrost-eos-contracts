@@ -8,7 +8,7 @@ namespace bifrost {
    }
 
    struct memo_info_type {
-      name receiver;
+      string receiver;
       name peerchain;
       string notes;
    };
@@ -27,7 +27,7 @@ namespace bifrost {
                     format).c_str());
       string receiver_str = memo.substr(0, pos);
       trim(receiver_str);
-      info.receiver = name(receiver_str);
+      info.receiver = receiver_str;
 
       // --- trim ---
       memo = memo.substr(pos + 1);
@@ -44,7 +44,7 @@ namespace bifrost {
          trim(info.notes);
       }
 
-      check(info.receiver != name(), (string("memo format error, receiver not provided, correct format: ") + format).c_str());
+      check(info.receiver.size() != 48, "invalid receiver length");
       check(info.peerchain != name(),(string("memo format error, chain not provided, correct format: ") + format).c_str());
 
       return info;

@@ -34,7 +34,6 @@ namespace bifrost {
 
       // parse and check memo
       memo_info_type memo_info = get_memo_info(memo);
-//      check(""_n == memo_info.receiver, "receiver: invalid bifrost address format");
       check(memo_info.peerchain == "bifrost"_n, "peerchain: invalid peerchain");
 
       // record to database
