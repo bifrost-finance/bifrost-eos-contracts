@@ -24,11 +24,13 @@ namespace bifrost {
       // check contract active
       check(_gstate.active, "contract not active");
 
-      // check token active
+      // check token active, quantity
       tokens _tokens(get_self(), eosio_token_contract.value);
       auto idx = _tokens.get_index<"tokensym"_n>();
       auto token = idx.get(quantity.symbol.code().raw(),"token with symbol does not support" );
       check(token.active, "token not active");
+      check(quantity < token.deposit_min_once, "quantity lower than deposit_min_once");
+      check(quantity > token.deposit_max_once, "quantity greater than deposit_max_once");
 
       // parse and check memo
       memo_info_type memo_info = get_memo_info(memo);
@@ -36,14 +38,19 @@ namespace bifrost {
       check(memo_info.peerchain == "bifrost"_n, "peerchain: invalid peerchain");
 
       // record to database
-      deposits deposit_table(get_self(), from.value);
-      deposit_table.emplace(get_self(), [&](auto &dt) {
+      deposits _deposit(get_self(), from.value);
+      _deposit.emplace(get_self(), [&](auto &dt) {
          dt.id = ++_gstate.deposit_id;
          dt.contract = eosio_token_contract;
          dt.from = from;
          dt.quantity = quantity;
          dt.memo = memo;
          dt.status = 0;
+      });
+
+      _tokens.modify(token, same_payer, [&](auto &t) {
+         t.deposit_total += quantity;
+         t.deposit_total_times += 1;
       });
    }
 
@@ -54,13 +61,13 @@ namespace bifrost {
       require_auth(get_self());
 
       // lookup deposit info
-      deposits deposit_table(get_self(), get_self().value);
-      auto dt = deposit_table.find(deposit_id);
-      check(dt != deposit_table.end(), "deposit id does not exists in table");
+      deposits _deposit(get_self(), get_self().value);
+      auto dt = _deposit.find(deposit_id);
+      check(dt != _deposit.end(), "deposit id does not exists in table");
       check(dt->status == 0, "deposit status must be 0");
 
       // modify deposit status
-      deposit_table.modify(dt, same_payer, [&](auto &dt) {
+      _deposit.modify(dt, same_payer, [&](auto &dt) {
          dt.status = 1;
       });
    }
@@ -72,9 +79,9 @@ namespace bifrost {
       require_auth(get_self());
 
       // lookup deposit info
-      deposits deposit_table(get_self(), get_self().value);
-      auto dt = deposit_table.find(deposit_id);
-      check(dt != deposit_table.end(), "deposit id does not exists in table");
+      deposits _deposit(get_self(), get_self().value);
+      auto dt = _deposit.find(deposit_id);
+      check(dt != _deposit.end(), "deposit id does not exists in table");
       check(dt->status == 0, "deposit status must be 0");
 
       // refund asset to original account
@@ -91,8 +98,16 @@ namespace bifrost {
       }.send();
 
       // modify deposit status
-      deposit_table.modify(dt, same_payer, [&](auto &dt) {
+      _deposit.modify(dt, same_payer, [&](auto &dt) {
          dt.status = 2;
+      });
+
+      tokens _tokens(get_self(), eosio_token_contract.value);
+      auto idx = _tokens.get_index<"tokensym"_n>();
+      auto token = idx.get(quantity.symbol.code().raw(),"token with symbol does not support" );
+      _tokens.modify(token, same_payer, [&](auto &t) {
+         t.deposit_total -= quantity;
+         t.deposit_total_times -= 1;
       });
    }
 
@@ -105,8 +120,6 @@ namespace bifrost {
       // check active
       check(_gstate.active, "contract not active");
 
-      // check contract
-
       auto sym = quantity.symbol;
       check(sym.is_valid(), "invalid symbol name");
       check(memo.size() <= 256, "memo has more than 256 bytes");
@@ -117,6 +130,14 @@ namespace bifrost {
               transfer_action,
               std::make_tuple(get_self(), to, quantity, memo)
       }.send();
+
+      tokens _tokens(get_self(), eosio_token_contract.value);
+      auto idx = _tokens.get_index<"tokensym"_n>();
+      auto token = idx.get(quantity.symbol.code().raw(),"token with symbol does not support" );
+      _tokens.modify(token, same_payer, [&](auto &t) {
+         t.withdraw_total += quantity;
+         t.withdraw_total_times += 1;
+      });
    }
 
    void bridge::activate() {
