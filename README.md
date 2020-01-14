@@ -81,7 +81,7 @@ cleos push action [contract_account] depositrlbk '["deposit_id"]' -p [contract_a
 
 * Resigter token information.
 ```bash
-cleos push action [contract_account] regtoken '["eosio.token", "EOS,4", "10000.0000 EOS", "1.0000 EOS", "1000.0000 EOS", "10000.0000 EOS", "1"]' -p [contract_account]@active
+cleos push action [contract_account] regtoken '["eosio.token", "4,EOS", "10000.0000 EOS", "1.0000 EOS", "1000.0000 EOS", "10000.0000 EOS", "1"]' -p [contract_account]@active
 ```
 
 * Enable one token deposit to bridge contract. 

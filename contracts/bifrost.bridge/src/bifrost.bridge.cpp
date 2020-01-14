@@ -26,9 +26,8 @@ namespace bifrost {
 
       // check token active, quantity
       tokens _tokens(get_self(), eosio_token_contract.value);
-      auto idx = _tokens.get_index<"tokensym"_n>();
-      auto token = idx.find(quantity.symbol.code().raw());
-      check(token != idx.end(), "token with symbol does not support");
+      auto token = _tokens.find(quantity.symbol.code().raw());
+      check(token != _tokens.end(), "token with symbol does not support");
       check(token->active, "token not active");
       check(quantity >= token->deposit_min_once, "quantity must be greater than or euqal to deposit_min_once");
       check(quantity <= token->deposit_max_once, "quantity must be less than or euqal to deposit_max_once");
@@ -103,9 +102,8 @@ namespace bifrost {
       });
 
       tokens _tokens(get_self(), eosio_token_contract.value);
-      auto idx = _tokens.get_index<"tokensym"_n>();
-      auto token = idx.find(quantity.symbol.code().raw());
-      check(token != idx.end(), "token with symbol does not support");
+      auto token = _tokens.find(quantity.symbol.code().raw());
+      check(token != _tokens.end(), "token with symbol does not support");
       _tokens.modify(*token, same_payer, [&](auto &t) {
          t.deposit_total -= quantity;
          t.deposit_total_times -= 1;
@@ -130,9 +128,8 @@ namespace bifrost {
       }.send();
 
       tokens _tokens(get_self(), eosio_token_contract.value);
-      auto idx = _tokens.get_index<"tokensym"_n>();
-      auto token = idx.find(quantity.symbol.code().raw());
-      check(token != idx.end(), "token with symbol does not support");
+      auto token = _tokens.find(quantity.symbol.code().raw());
+      check(token != _tokens.end(), "token with symbol does not support");
       _tokens.modify(*token, same_payer, [&](auto &t) {
          t.withdraw_total += quantity;
          t.withdraw_total_times += 1;
@@ -173,22 +170,20 @@ namespace bifrost {
             deposit_max_daily.amount > deposit_max_once.amount, "invalid asset");
 
       tokens _tokens(get_self(), token_contract.value);
-      auto idx = _tokens.get_index<"tokensym"_n>();
-      auto token = idx.find(token_symbol.code().raw());
-      check(token == idx.end(), "token already exist");
-      _tokens.emplace(get_self(), [&](auto &r) {
-         r.token_contract = token_contract;
-         r.token_symbol = token_symbol;
-         r.accept = asset{0, token_symbol};
-         r.max_accept = max_accept;
-         r.deposit_min_once = deposit_min_once;
-         r.deposit_max_once = deposit_max_once;
-         r.deposit_max_daily = deposit_max_daily;
-         r.deposit_total = asset{0, token_symbol};
-         r.deposit_total_times = 0;
-         r.withdraw_total = asset{0, token_symbol};
-         r.withdraw_total_times = 0;
-         r.active = active;
+      auto token = _tokens.find(token_symbol.code().raw());
+      check(token == _tokens.end(), "token already exist");
+      _tokens.emplace(get_self(), [&](auto &t) {
+         t.token_symbol = token_symbol;
+         t.accept = asset{0, token_symbol};
+         t.max_accept = max_accept;
+         t.deposit_min_once = deposit_min_once;
+         t.deposit_max_once = deposit_max_once;
+         t.deposit_max_daily = deposit_max_daily;
+         t.deposit_total = asset{0, token_symbol};
+         t.deposit_total_times = 0;
+         t.withdraw_total = asset{0, token_symbol};
+         t.withdraw_total_times = 0;
+         t.active = active;
       });
    }
 
@@ -196,9 +191,8 @@ namespace bifrost {
       require_auth(get_self());
 
       tokens _tokens(get_self(), eosio_token_contract.value);
-      auto idx = _tokens.get_index<"tokensym"_n>();
-      auto token = idx.find(token_symbol.code().raw());
-      check(token != idx.end(), "token with symbol does not support");
+      auto token = _tokens.find(token_symbol.code().raw());
+      check(token != _tokens.end(), "token with symbol does not support");
       _tokens.modify(*token, same_payer, [&](auto &t) {
          t.active = true;
       });
@@ -208,9 +202,8 @@ namespace bifrost {
       require_auth(get_self());
 
       tokens _tokens(get_self(), eosio_token_contract.value);
-      auto idx = _tokens.get_index<"tokensym"_n>();
-      auto token = idx.find(token_symbol.code().raw());
-      check(token != idx.end(), "token with symbol does not support");
+      auto token = _tokens.find(token_symbol.code().raw());
+      check(token != _tokens.end(), "token with symbol does not support");
       _tokens.modify(*token, same_payer, [&](auto &t) {
          t.active = false;
       });
@@ -224,9 +217,8 @@ namespace bifrost {
       require_auth(get_self());
 
       tokens _tokens(get_self(), eosio_token_contract.value);
-      auto idx = _tokens.get_index<"tokensym"_n>();
-      auto token = idx.find(token_symbol.code().raw());
-      check(token != idx.end(), "token with symbol does not support");
+      auto token = _tokens.find(token_symbol.code().raw());
+      check(token != _tokens.end(), "token with symbol does not support");
       _tokens.modify(*token, same_payer, [&](auto &t) {
          t.deposit_min_once = deposit_min_once;
          t.deposit_max_once = deposit_max_once;

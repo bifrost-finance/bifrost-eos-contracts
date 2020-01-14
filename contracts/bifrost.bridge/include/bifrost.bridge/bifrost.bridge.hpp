@@ -75,7 +75,7 @@ namespace bifrost {
       struct [[eosio::table]] globalstate {
          globalstate() {}
 
-         uint64_t deposit_id = 1;
+         uint64_t deposit_id = 0;
          bool active = true;
 
          EOSLIB_SERIALIZE( globalstate, (deposit_id)(active) )
@@ -95,7 +95,6 @@ namespace bifrost {
       };
 
       struct [[eosio::table]] token_register {
-         name        token_contract;
          symbol      token_symbol;
          asset       accept;
          asset       max_accept;
@@ -108,8 +107,7 @@ namespace bifrost {
          uint64_t    withdraw_total_times;
          bool        active;
 
-         uint64_t  primary_key()const { return token_contract.value; }
-         uint64_t  by_token_symbol()const { return token_symbol.code().raw(); }
+         uint64_t  primary_key()const { return token_symbol.code().raw(); }
       };
 
       eosio::singleton<"globalstate"_n, globalstate> _global_state;
@@ -117,12 +115,7 @@ namespace bifrost {
 
       typedef eosio::multi_index<"deposits"_n, deposit> deposits;
 
-      typedef eosio::multi_index< "tokens"_n, token_register,
-              indexed_by<
-                 "tokensym"_n,
-                 const_mem_fun<token_register, uint64_t, &token_register::by_token_symbol>
-              >
-      > tokens;
+      typedef eosio::multi_index< "tokens"_n, token_register> tokens;
    };
 
 }
