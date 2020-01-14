@@ -29,8 +29,8 @@ namespace bifrost {
       auto idx = _tokens.get_index<"tokensym"_n>();
       auto token = idx.get(quantity.symbol.code().raw(),"token with symbol does not support" );
       check(token.active, "token not active");
-      check(quantity < token.deposit_min_once, "quantity lower than deposit_min_once");
-      check(quantity > token.deposit_max_once, "quantity greater than deposit_max_once");
+      check(quantity >= token.deposit_min_once, "quantity must be greater than or euqal to deposit_min_once");
+      check(quantity <= token.deposit_max_once, "quantity must be less than or euqal to deposit_max_once");
 
       // parse and check memo
       memo_info_type memo_info = get_memo_info(memo);
@@ -174,6 +174,7 @@ namespace bifrost {
       check(existing == _tokens.end(), "token contract already exist");
       _tokens.emplace(get_self(), [&](auto &r) {
          r.token_contract = token_contract;
+         r.token_symbol = token_symbol;
          r.accept = asset{0, token_symbol};
          r.max_accept = max_accept;
          r.deposit_min_once = deposit_min_once;
