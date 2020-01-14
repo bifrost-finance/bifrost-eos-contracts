@@ -37,7 +37,7 @@ namespace bifrost {
       check(memo_info.peerchain == "bifrost"_n, "peerchain: invalid peerchain");
 
       // record to database
-      deposits _deposit(get_self(), from.value);
+      deposits _deposit(get_self(), get_self().value);
       _deposit.emplace(get_self(), [&](auto &dt) {
          dt.id = ++_gstate.deposit_id;
          dt.contract = eosio_token_contract;
