@@ -7,3 +7,4 @@ find_package(eosio.cdt)
 
 add_subdirectory(bifrost.token)
 add_subdirectory(bifrost.bridge)
+add_subdirectory(liebi.account)
