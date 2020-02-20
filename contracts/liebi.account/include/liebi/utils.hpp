@@ -84,14 +84,12 @@ public_key str_to_pub(const string& pubkey, const bool& checksumming = true) {
 
     array<char, 33> pubkey_data;
     copy_n(vch.begin(), 33, pubkey_data.begin());
-    if (checksumming) {
-        checksum160 check_pubkey = ripemd160(reinterpret_cast<char*>(pubkey_data.data()), 33);
-        assert_ripemd160((char*)&vch.end()[-4], 4, check_pubkey);
-    }
+//    if (checksumming) {
+//        checksum160 check_pubkey = ripemd160(reinterpret_cast<char*>(pubkey_data.data()), 33);
+//        assert_ripemd160((char*)&vch.end()[-4], 4, check_pubkey);
+//    }
 
-    public_key _pub_key;
-    eosio::datastream<const char*> pubkey_ds(pubkey_data.data(), 33);
-    pubkey_ds >> _pub_key;
+   public_key _pub_key(std::in_place_index<0>, pubkey_data);
 
-    return _pub_key;
+   return _pub_key;
 }

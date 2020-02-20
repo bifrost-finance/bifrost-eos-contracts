@@ -38,7 +38,7 @@ namespace liebi {
         void ramprice() {
             require_auth(_self);
 
-            symbol ramcore_symbol = symbol("RAMCORE", 4);
+            symbol ramcore_symbol = symbol(symbol_code("RAMCORE"), 4);
             rammarket_index rammarket(EOS_SYSTEM_CONTRACT, EOS_SYSTEM_CONTRACT.value);
             const auto &st = rammarket.get(ramcore_symbol.raw(), "ram market does not exist");
 

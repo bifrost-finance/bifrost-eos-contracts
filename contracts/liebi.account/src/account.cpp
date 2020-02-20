@@ -63,7 +63,7 @@ namespace liebi {
 
         // see https://eosio.stackexchange.com/questions/847/how-to-get-current-last-ram-price
         // calculate 4k ram price
-        symbol ramcore_symbol = symbol("RAMCORE", 4);
+        symbol ramcore_symbol = symbol(symbol_code("RAMCORE"), 4);
         rammarket_index rammarket(EOS_SYSTEM_CONTRACT, EOS_SYSTEM_CONTRACT.value);
         const auto &st = rammarket.get(ramcore_symbol.raw(), "ram market does not exist");
         double quote_balance = (double) st.quote.balance.amount / 10000;
