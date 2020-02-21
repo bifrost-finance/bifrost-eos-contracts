@@ -44,7 +44,7 @@ namespace bifrost {
          trim(info.notes);
       }
 
-      check(info.receiver.size() != 48, "invalid receiver length");
+      check(info.receiver.size() != 255, "invalid receiver length");
       check(info.peerchain != name(),(string("memo format error, chain not provided, correct format: ") + format).c_str());
 
       return info;
