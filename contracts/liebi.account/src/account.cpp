@@ -85,8 +85,8 @@ namespace liebi {
         asset fee_quantity = asset(get_dict_val(ID_NEW_ACCOUNT_FEE_QUANTITY), EOS_SYMBOL);
         check(fee_quantity.amount >= 0, "invalid fee quantity");
 
-        // new account need at least 0.0001 EOS
-        asset new_account_quantity = asset(1, EOS_SYMBOL);
+        // new account need at least 0.001 EOS
+        asset new_account_quantity = asset(10, EOS_SYMBOL);
 
         // calculate surplus quantity
         asset surplus_quantity = quantity - fee_quantity - ram_4k_quantity - ram_256byte_quantity
